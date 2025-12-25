@@ -1,8 +1,27 @@
 services:
   deye-mqtt:
     image: ghcr.io/kbialek/deye-inverter-mqtt
+    container_name: deye-mqtt
     env_file:
       - config.env
     restart: unless-stopped
     volumes: 
       - ./plugins:/opt/deye_inverter_mqtt/plugins:ro
+    networks:
+      - iot
+      - external
+      
+networks:
+  iot:
+    name: iot      # <-- Network name on the host
+    driver: bridge
+    internal: true # <-- No internet access
+    driver_opts:
+      com.docker.network.bridge.name: br_iot
+  external:
+    name: external
+    driver: bridge
+    internal: false # <-- internet access
+    driver_opts:
+      com.docker.network.bridge.name: br_external
+
